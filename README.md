@@ -5,6 +5,9 @@
 
 ## Goal
 Challenge myself to implement an image-to-ascii converter in Java, in as few lines as possible.
+![picture](https://user-images.githubusercontent.com/11161817/121420315-274b7c80-c92a-11eb-8b7a-80bc3c2eadb7.jpg)
+
+![image](https://user-images.githubusercontent.com/11161817/121420236-0f73f880-c92a-11eb-84bf-9b92797f27b3.png)
 
 ### Algorithm
 - Read in an image from disk
@@ -58,21 +61,22 @@ I can save some lines by moving all of our variable declarations onto a single l
 - Removed `int r, g, b`
 - Removed `int average`
 - Replaced variables with calls directly to `source.getRGB(j, i)`
-- Removed braces from the `for` loops
+- Removed braces from one of the `for` loops
 - Moved variable declarations to a single line
 
 | Lines        | {}           | ;            | Score        |
 | ------------ | ------------ | ------------ | ------------ |
-| 15 -> 6      | 6 -> 2       | 10           | **18**       |
+| 15 -> 6      | 6 -> 4       | 10           | **20**       |
 
 
 ```java
 public static void main(String[] args) throws Exception {
 	BufferedImage source = ImageIO.read(new File("picture.jpg")); StringBuilder sb = new StringBuilder(); char[] chars = new char[] { '@', '#', '&', '$', '%', '?', '*', '+', ';', ':', ',', '.' };
-	for (int i = 0; i < source.getHeight(); i++) 
+	for (int i = 0; i < source.getHeight(); i++) {
 		for (int j = 0; j < source.getWidth(); j++) 
 			sb.append(chars[Math.min(((((source.getRGB(j, i) >> 16) & 0xFF) + ((source.getRGB(j, i) >> 8) & 0xFF) + ((source.getRGB(j, i)) & 0xFF)) / 3) * chars.length / 255, chars.length - 1)]);
 		sb.append('\n');
+	}
 	Files.write(Paths.get("output.txt"), sb.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 }
 ```
@@ -94,7 +98,7 @@ I can determine when a row of pixels has 'ended' by performing a modulus of text
 
 | Lines        | {}           | ;            | Score        |
 | ------------ | ------------ | ------------ | ------------ |
-| 6 -> 3       | 2            | 10 -> 5      | **10**       |
+| 6 -> 3       | 4 -> 2       | 10 -> 5      | **10**       |
 
 
 ```java
@@ -156,11 +160,11 @@ This represented a pretty good set of contrasting characters, mostly in order fr
 ```java
 public static void main(String[] args) throws Exception {
 	BufferedImage i; AtomicInteger a = new AtomicInteger(); PrintWriter o = new PrintWriter("output.txt", "UTF-8");
-	Arrays.stream((i = ImageIO.read(new File("picture3.jpg"))).getRGB(0, 0, i.getWidth(), i.getHeight(), null, 0, i.getWidth())).forEach(p -> o.append(a.incrementAndGet() % i.getWidth() == 0 ? '\n' : (char)(((((p >> 16) & 0xFF) + ((p >> 8) & 0xFF) + ((p) & 0xFF)) / 3 * 12 / 255) + 35)).flush());
+	Arrays.stream((i = ImageIO.read(new File("picture.jpg"))).getRGB(0, 0, i.getWidth(), i.getHeight(), null, 0, i.getWidth())).forEach(p -> o.append(a.incrementAndGet() % i.getWidth() == 0 ? '\n' : (char)(((((p >> 16) & 0xFF) + ((p >> 8) & 0xFF) + ((p) & 0xFF)) / 3 * 12 / 255) + 35)).flush());
 }
 ```
 
-#### Final Iteration 5 - The one-liner
+#### Final Iteration 6 - The one-liner
 Finally, let's move everything together to remove one additional line.
 
 | Lines        | {}           | ;            | Score        |
@@ -170,6 +174,6 @@ Finally, let's move everything together to remove one additional line.
 
 ```java
 public static void main(String[] args) throws Exception {
-	BufferedImage i; AtomicInteger a = new AtomicInteger(); PrintWriter o = new PrintWriter("output.txt", "UTF-8"); Arrays.stream((i = ImageIO.read(new File("picture3.jpg"))).getRGB(0, 0, i.getWidth(), i.getHeight(), null, 0, i.getWidth())).forEach(p -> o.append(a.incrementAndGet() % i.getWidth() == 0 ? '\n' : (char)(((((p >> 16) & 0xFF) + ((p >> 8) & 0xFF) + ((p) & 0xFF)) / 3 * 12 / 255) + 35)).flush());
+	BufferedImage i; AtomicInteger a = new AtomicInteger(); PrintWriter o = new PrintWriter("output.txt", "UTF-8"); Arrays.stream((i = ImageIO.read(new File("picture.jpg"))).getRGB(0, 0, i.getWidth(), i.getHeight(), null, 0, i.getWidth())).forEach(p -> o.append(a.incrementAndGet() % i.getWidth() == 0 ? '\n' : (char)(((((p >> 16) & 0xFF) + ((p >> 8) & 0xFF) + ((p) & 0xFF)) / 3 * 12 / 255) + 35)).flush());
 }
 ```
